@@ -4,11 +4,14 @@ from collections import Counter
 
 commands = ["new", "pos", "ipa", "meaning", "meta", "cancel", "info", "saveas", "count", "poscount"]
 noARG = ["save", "exit", "info"]
+
 def load(path="lexicon.json"):
     try:
         with open(path, encoding="utf-8") as f:
             return json.load(f)
-    except FileNotFoundError:
+    except FileNotFoundError: # file doesn't exist
+        return []
+    except PermissionError: # file exists but cannot be opened
         return []
 entries = load()
 def reset():
@@ -27,8 +30,8 @@ def validate(d):
     return None
 def save(entry, path="lexicon.json"):
     err = validate(entry) 
-    if err != None: 
-        print("error: ",err)
+    if err is not None: 
+        print("error: ", err)
         return
     entries.append(entry.copy())
     with open(path, "w", encoding="utf-8") as f:
@@ -47,6 +50,7 @@ def info(d):
     amount = 0
     x = 0
     blanks = []
+    
     if not d["word"]:
         blanks.append("word")
         amount+=1
@@ -69,19 +73,17 @@ def info(d):
 def phoncount(ipa):
     toks = tokenize(ipa)
 
-
 def poscount(entries):
     c = Counter(e.get("pos") for e in entries)
     for pos, n in c.most_common():
         print(f"{n:>5}  {pos}")
 
 while True:
-
-    x = input("LangM> ")
-    x = x.split(" ", 1)
-    if len(x) == 1 and x[0] == "exit": break
+    x = input("LangM> ").split(" ", 1)
+    if len(x) == 1 and x[0] == "exit": 
+        break
     elif len(x) == 1 and x[0] not in noARG:
-        print("Expected an argument, got none")
+        print("Expected an argument, got none.")
         continue
     cmd = x[0]
     arg = x[1] if len(x) > 1 else ""
@@ -108,7 +110,7 @@ while True:
             for m in arg:
                 entry["meta"].append(m)
             if len(arg) > 2:
-                print(f"Error: expected 2 arguments, got {len(arg)}")
+                print(f"Error: expected 2 arguments, got {len(arg)}.")
                 entry["meta"] = [None, None]
         case "save":
             save(entry)
@@ -122,10 +124,10 @@ while True:
                 with open(arg) as f:
                     file = json.load(f)
             except FileNotFoundError:
-                print(f"Error: Couldn't find file {arg}")
+                print(f"Error: Couldn't find file {arg}. Are you sure it exists in this context?")
                 continue
             if file is None:
-                print("Something went wrong and data couldn't be fetch")
+                print("Something went wrong and data couldn't be fetched.")
                 continue
             print(len(file))
         case "poscount":
@@ -137,6 +139,6 @@ while True:
                 print(f"Error: Couldn't find file {arg}")
                 continue
             if file is None:
-                print("Something went wrong and data couldn't be fetch")
+                print("Something went wrong and data couldn't be fetched.")
                 continue
             poscount(file)
