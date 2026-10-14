@@ -2,7 +2,6 @@ import json
 from ipa import convert
 from collections import Counter
 
-commands = ["new", "pos", "ipa", "meaning", "meta", "cancel", "info", "saveas", "count", "poscount"]
 noARG = ["save", "exit", "info"]
 
 def load(path="lexicon.json"):
@@ -53,19 +52,23 @@ def info(d):
     
     if not d["word"]:
         blanks.append("word")
-        amount+=1
+        amount += 1
     if not d["means"]:
         blanks.append("meaning")
-        amount+=1
+        amount += 1
     if not d["meta"]:
         blanks.append("meta")
-        amount+=1
+        amount += 1
     if not d["pos"]:
         blanks.append("POS")
-        amount+=1
+        amount += 1
     if not d["ipa"]:
         blanks.append("IPA")
-        amount+=1
+        amount += 1
+    # try to DRY up this block.
+    # I would do it myself but I have no idea what's going on here and don't want to break anything.
+    # The goal is to have one `amount += 1`
+    
     print(f"Missing fields: {amount} ")
     for missing in blanks:
         print(f"\t{missing} (Reqired)") 
@@ -87,9 +90,6 @@ while True:
         continue
     cmd = x[0]
     arg = x[1] if len(x) > 1 else ""
-    if cmd not in commands:
-        print(f"Error: unrecognized command {cmd}.")
-        continue
 
     match cmd:
         case "new": 
@@ -142,3 +142,9 @@ while True:
                 print("Something went wrong and data couldn't be fetched.")
                 continue
             poscount(file)
+        case "help":
+            # fill this out yourself. I don't know what this program is
+            print("Commands: new, pos, ipa, meaning, meta, saves, info, saveas, count, poscount.")
+        case _: # unrecognized command
+            print(f"{cmd} isn't a recognized command.")
+            continue # I don't think this command is necessary but I don't want to fuck around and find out
