@@ -1,23 +1,33 @@
+
 MAP = {
-    "S": "ʃ", "T": "θ", "R": "ɾ", "q": "ʁ",
-    "D": "ð", "'": "ˈ", ":": "ː", "B": "β"
+    "S": "ʃ",
+    "T": "θ",
+    "R": "ɾ",
+    "q": "ʁ",
+    "D": "ð",
+    "'": "ˈ",
+    ":": "ː",
+    "B": "β"
 }
+
 PASS = set("abcdefgiklmnopqrstuvw.")
+
+
 def get(file):
     data = None
     try: 
         with open(file) as f:
             data = f.readlines()
     except FileNotFoundError:
-        print(f"Error: File {file} could not be found")
+        print(f"Error: File {file} could not be found in this context.")
         return
-    if data is None:
+    except PermissionError:
         print("Error: Something unexpected happened and we couldn't retrieve the data from your file...")
         return
     i = 0
     result = {}
     for line in data:
-        i+=1
+        i += 1
         line = line.strip()
         stuff = line.split(" ", 1)
         if len(stuff) != 2:
@@ -26,10 +36,10 @@ def get(file):
         map  = stuff[1]
         if char not in result:
             result[char] = map
-
     return result
 
-def convert(s: str) -> str:
+
+def convert(s):
     out = []
     for ch in s:
         if ch in MAP:
@@ -40,6 +50,7 @@ def convert(s: str) -> str:
             print(f"Unrecognized character {ch!r}")
             out.append(ch)
     return "".join(out)
+
 
 def tokenize(ipa, skips="ˈ.ˌ"):
     inventory = ['a', "aː", "e","eː", "i", "iː","o","oː", "u","uː","b", "d", "f", "ɡ", "j", "k", "l", "m", "n", "p", "r", "ʁ", "s", "t", "θ", 'tʃ', 'v','w', 'x']
@@ -59,3 +70,4 @@ def tokenize(ipa, skips="ˈ.ˌ"):
             tokens.append(ipa[i])     # unknown symbol, keep it visible
             i += 1
     return tokens
+
